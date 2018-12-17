@@ -1,4 +1,11 @@
 <?php
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+require($_SERVER["DOCUMENT_ROOT"] . "/vendor/autoload.php");
+
+
 $users = [
     ["email" => "madridianfox@yandex.ru"],
     ["email" => "dimka@yandex.ru"],
@@ -7,6 +14,9 @@ $users = [
     ["email" => "slavaslava@yandex.ru"],
     ["email" => "satana@yandex.ru"]
 ];
+
+$log = new Logger('application');
+
 
 function valueOrDie($arr, $name, $message)
 {
@@ -18,6 +28,8 @@ function valueOrDie($arr, $name, $message)
 
 function isUserInList($users, $email)
 {
+    global $log;
+    $log->info("Проверка существования пользователся", ["email" => $email]);
     foreach ($users as $user) {
         if ($user["email"] == $email) {
             return true;
@@ -32,8 +44,12 @@ $result = [
 ];
 
 try {
+    $log->pushHandler(new StreamHandler($_SERVER["DOCUMENT_ROOT"] . "/logs/default.log"));
     $only_check = isset($_GET["only_check"]);
     $email = valueOrDie($_POST, "email", "Необходимо заполнить email");
+    if (!preg_match("/[\w\d\-_\.]+@[\w\d\-_\.]+\.[\w\d\-_\.]+/",$email)) {
+        throw new \Exception("Введите правильный email");
+    }
     if (isUserInList($users, $email)) {
         throw new \Exception("Пользователь с такой почтой уже зарегистрирован");
     }
@@ -43,7 +59,6 @@ try {
         $last_name = valueOrDie($_POST, "last_name", "Необходимо заполнить фамилию");
         $pass_1 = valueOrDie($_POST, "pass_1", "Необходимо заполнить пароль");
         $pass_2 = valueOrDie($_POST, "pass_2", "Необходимо заполнить повтор пароля");
-
 
 
         if ($pass_1 != $pass_2) {
