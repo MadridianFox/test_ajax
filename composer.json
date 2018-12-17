@@ -1,0 +1,16 @@
+{
+  "name": "madridianfox/testajax",
+  "description": "Some piece of code",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Ivan Koryukov",
+      "email": "madridianfox@yandex.ru"
+    }
+  ],
+
+  "require-dev": {
+    "symfony/var-dumper": "*"
+  }
+}
